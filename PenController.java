@@ -1,5 +1,12 @@
 import lejos.utility.Delay;
 
+/**
+ * Kyn‰n ohjaus moottoreiden avulla 
+ * @author anttijuj
+ * T‰ll‰ tiedostolla ohjataan kyn‰‰ k‰ytt‰m‰ll‰ Motors.java:n funktioita.
+ * Laita kaikki liikkeisiin liittyv‰t asiat t‰nne.
+ */
+
 public class PenController {
 	private int x, y;
 	private Motors motors;

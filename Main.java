@@ -111,7 +111,7 @@ public class Main {
 	// piirt‰‰ viivan valittuun suuntaan oletuspituudella
 	// k‰ytt‰en forward, backward, flt metodeja
 	static void drawLine(String dir) { 
-		int lenght = 1000;
+		int lenght = 250;
 		
 		if (dir == "eteen") {
 			motors.goForward();

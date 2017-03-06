@@ -13,10 +13,14 @@ public class PenController {
 	public PenController(Motors motors) {
 		this.motors = motors;
 	}
-	
-	// piirt‰‰ viivan valittuun suuntaan tietyn ajan
-	// k‰ytt‰en forward, backward, flt metodeja
-	public void drawLine(String dir, int lenght) { 
+/**
+ * 	piirt‰‰ viivan valittuun suuntaan tietyn ajan
+ *  k‰ytt‰en forward, backward, flt metodeja
+ * @param dir "eteen", "taakse", "oikea", "vasen", "etuoikea", "etuvasen", "takaoikea", "takavasen"
+ * @param lenght double delayn aika liikkeess‰
+ */
+	// suora viiva
+	public void drawLine(String dir, double lenght) { 
 		if (dir == "eteen") {
 			motors.goForward();
 		} else if (dir == "taakse") {
@@ -35,56 +39,141 @@ public class PenController {
 			motors.goFrontLeft();
 		}
 		
-		Delay.msDelay(lenght); 
+		Delay.msDelay((int) lenght); 
 		
-		motors.stopFlt();
+		motors.stop();
 	}
 	
-	// piirt‰‰ 45 asteen kaaren johonkin suuntaan
+/**
+ * Piirt‰‰ 90 asteen ympyr‰n suuntaan dir1, kaartaen siit‰ suuntaan dir2
+ * K‰ytt‰‰ delayta yksitt‰isten tarkkuusosien piirtoon
+ * ja smoothnessia tarkkuusosien m‰‰r‰n‰
+ * @param dir1 int, 0 = eteen, 1 = oikealle, 2 = taakse, 3 = vasemmalle
+ * @param dir2 int, 0 = oikealle, 1 = vasemmalle
+ * @param delay float, delayn aika yhdess‰ osassa
+ * @param smoothness int, tarkkuusosien m‰‰r‰
+ */
+	// piirt‰‰ 90 asteen kaaren johonkin suuntaan
 	// dir1 on mihin p‰in robotti alkaa piirt‰‰ (eteen = 0, taakse = 2, oikea = 1, vasen = 3)
 	// dir2 minne kaari kaartuu (oikea = 0, vasen = 1)
-	public void drawCurve(String dir1, String dir2, int delay, int smoothness) {
-		float speed = 100;
-		float interval = 100.0 / smoothness;
-		
-		switch(dir1) {
-			// eteen
-			case 0:
-				motors.goForward();
-				break;
-				
-			// oikea
-			case 1:
-				motors.goRight();
-				break;
-				
-			// taakse
-			case 2:
-				motors.goBackward();
-				break;
-				
-			// vasen
-			case 3:
-				motors.goLeft();
-				break;
-		}
+	public void drawCurve(int dir1, int dir2, float delay, int smoothness) {
+		double angle = 35;
+		float interval = 35 / smoothness;
 		
 		// parillinen niin tarvitsee hidastaa oikeaa moottoria, pariton niin vasenta
-		if ((dir1 + dir2) mod 2 == 0) {
+		if ((dir1 + dir2) % 2 == 0) {
 			for (int i = 0; i < smoothness; i++) {
-				motors.setSpeed(100, speed);
-				speed -= smoothness;
-				Delay.msDelay(delay);
+				motors.setSpeed(100, 100 * (float) Math.sin(Math.toRadians(angle)));
+				angle -= interval;
+				switch(dir1) {
+					// eteen + oikea
+					case 0:
+						motors.goForward();
+						break;
+						
+					// oikea + vasen
+					case 1:
+						motors.goRight();
+						break;
+						
+					// taakse + oikea
+					case 2:
+						motors.goBackward();
+						break;
+						
+					// vasen + vasen
+					case 3:
+						motors.goLeft();
+						break;
+				}
+				Delay.msDelay((int) delay);
+				motors.stop();
+			}
+			for (int i = 0; i < smoothness; i++) {
+				motors.setSpeed(100, 100 * (float) Math.sin(Math.toRadians(angle)));
+				angle += interval;
+					switch(dir1) {
+					// eteen + oikea
+					case 0:
+						motors.goRight();
+						break;
+						
+					// oikea + vasen
+					case 1:
+						motors.goForward();
+						break;
+						
+					// taakse + oikea
+					case 2:
+						motors.goLeft();
+						break;
+						
+					// vasen + vasen
+					case 3:
+						motors.goBackward();
+						break;
+				}
+				Delay.msDelay((int) delay);
+				motors.stop();
 			}
 		} else {
 			for (int i = 0; i < smoothness; i++) {
-				motors.setSpeed(speed, 100);
-				speed -= smoothness;
-				Delay.msDelay(delay);
+				motors.setSpeed(100 * (float) Math.sin(Math.toRadians(angle)), 100);
+				angle -= interval;
+					switch(dir1) {
+					// eteen + vasen
+					case 0:
+						motors.goForward();
+						break;
+						
+					// oikea + oikea
+					case 1:
+						motors.goRight();
+						break;
+						
+					// taakse + vasen
+					case 2:
+						motors.goBackward();
+						break;
+						
+					// vasen + oikea
+					case 3:
+						motors.goLeft();
+						break;
+				}
+				Delay.msDelay((int) delay);
+				motors.stop();
+			}
+			for (int i = 0; i < smoothness; i++) {
+				motors.setSpeed(100 * (float) Math.sin(Math.toRadians(angle)), 100);
+				angle += interval;
+					switch(dir1) {
+					// eteen + vasen
+					case 0:
+						motors.goLeft();
+						break;
+						
+					// oikea + oikea
+					case 1:
+						motors.goBackward();
+						break;
+						
+					// taakse + vasen
+					case 2:
+						motors.goRight();
+						break;
+						
+					// vasen + oikea
+					case 3:
+						motors.goForward();
+						break;
+				}
+				Delay.msDelay((int) delay);
+				motors.stop();
 			}
 		}
 		
-		motors.stopFlt();
+		motors.resetSpeed();
 	}
 	
 	/*

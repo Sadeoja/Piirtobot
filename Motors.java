@@ -11,7 +11,7 @@ import lejos.robotics.RegulatedMotor;
 
 
 public class Motors {
-	private int defaultSpeed = 300;
+	private float defaultSpeed;
 	private int angleLimit = 1600;
 	private int lifterAngle = 45;
 	
@@ -23,6 +23,7 @@ public class Motors {
 		rightMotor = new EV3LargeRegulatedMotor(MotorPort.A);
 		leftMotor = new EV3LargeRegulatedMotor(MotorPort.C);
 		lifterMotor = new EV3MediumRegulatedMotor(MotorPort.B);
+		this.defaultSpeed = Math.min(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed());
 		rightMotor.setSpeed(defaultSpeed);
 		leftMotor.setSpeed(defaultSpeed);
 		lifterMotor.setSpeed(defaultSpeed);
@@ -35,7 +36,7 @@ public class Motors {
 	
 	public boolean checkPosition() {
 		// jos ollaan liian lähellä rajaa
-		if (Math.abs(leftMotor.getPosition()) + Math.abs(rightMotor.getPosition()) >= angleLimit)
+		if (Math.abs(leftMotor.getPosition()) + Math.abs(rightMotor.getPosition()) >= angleLimit) {
 			return false;
 		} else {
 			return true;
@@ -129,23 +130,19 @@ public class Motors {
 	
 	public void stop() {
 		syncStart();
-		leftMotor.stop(true);
-		rightMotor.stop(true);
+		leftMotor.flt(true);
+		rightMotor.flt(true);
 		syncEnd();
 	}
 	
 	public void setSpeed(float leftSpeed, float rightSpeed) {
-		syncStart();
-		leftMotor.setSpeed((int) ((leftSpeed / 100.0) * defaultSpeed));
-		rightMotor.setSpeed((int) ((rightSpeed / 100.0) * defaultSpeed));
-		syncEnd();
+		leftMotor.setSpeed(leftSpeed / 100 * defaultSpeed);
+		rightMotor.setSpeed(rightSpeed / 100 * defaultSpeed);
 	}
 	
 	public void resetSpeed() {
-		syncStart();
 		leftMotor.setSpeed(defaultSpeed);
 		rightMotor.setSpeed(defaultSpeed);
-		syncEnd();
 	}
 	
 	public void resetPosition() {

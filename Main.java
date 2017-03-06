@@ -8,6 +8,8 @@ import lejos.utility.Delay;
 public class Main {
 	static Motors motors;
 	static PenController penController;
+	static Shapes shapes;
+	static Letters letters;
 	
 	public static void main(String[] args) {
 		
@@ -23,15 +25,22 @@ public class Main {
 			LCD.drawString("x: " + x + ", y: " + y, 0, 0);
 			LCD.refresh();
 			if (valinta == "vapaa") {
-				if (Button.DOWN.isDown()) {
-					penController.drawLine("eteen", 25);
-				}else if (Button.UP.isDown()) {
-					penController.drawLine("taakse", 25);
-				}else if (Button.RIGHT.isDown()) {
-					penController.drawLine("vasen", 25);
-				}else if (Button.LEFT.isDown()) {
-					penController.drawLine("oikea", 25);
+				while (Button.DOWN.isDown()) {
+					motors.goForward();
 				}
+				motors.stop();
+				while (Button.UP.isDown()) {
+					motors.goBackward();
+				}
+				motors.stop();
+				while (Button.RIGHT.isDown()) {
+					motors.goLeft();
+				}
+				motors.stop();
+				while (Button.LEFT.isDown()) {
+					motors.goRight();
+				}
+				motors.stop();
 //				if (Button.DOWN.isDown()) {
 //					y--;
 //					Delay.msDelay(500);
@@ -45,8 +54,8 @@ public class Main {
 //					x--;
 //					Delay.msDelay(500);
 //				}
-				else if (Button.ENTER.isDown()) {
-					shapes.ympyra(5, 200);
+				if (Button.ENTER.isDown()) {
+					shapes.ympyra(10, 25);
 				}
 				
 //			} else if (valinta == "nelio") {
@@ -63,6 +72,7 @@ public class Main {
 				break;
 			}
 		}
+		motors.resetPosition();
 		motors.close();
 	}
 	

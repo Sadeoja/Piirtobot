@@ -1,11 +1,23 @@
+/**
+ * Piirt‰‰ eri kirjaimia
+ * @author anttijuj
+ *
+ */
+
 public class Letters {
 	private PenController penController;
 	
 	public Letters(PenController penController) {
 		this.penController = penController;
 	}
+
+/**
+ * Piirt‰‰ yhden annetun kirjaimen alkaen suunnilleen kirjaimen alaosasta tietyll‰ koolla
+ * @param letter String, "a", "b", "c", ..., "x", "y", "z"
+ * @param size float, kirjaimen koko (yhden liikkeen aika, hyv‰ size noin 500-1000)
+ */
 	
-	drawLetter(char letter, int size) {
+	public void drawLetter(String letter, float size) {
 		float mp = 1;
 		switch(letter) {
 			case "a":
@@ -159,7 +171,7 @@ public class Letters {
 				
 			case "v":
 				penController.drawLine("takaoikea", size * 1.4);
-				penController.drawLine("etuoikea", size * 1.4;
+				penController.drawLine("etuoikea", size * 1.4);
 				break;
 				
 			case "w":

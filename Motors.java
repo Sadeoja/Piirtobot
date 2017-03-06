@@ -5,14 +5,16 @@ import lejos.robotics.RegulatedMotor;
 
 /**
  * Moottorin ohjaus
- * @author anttijuj
+ * @author ?
  * Tässä tiedostossa voidaan ohjata moottoreita.
  */
 
 
 public class Motors {
 	private int defaultSpeed = 300;
-	private int angleLimit = 800;
+	private int angleLimit = 1600;
+	private int lifterAngle = 45;
+	
 	public EV3LargeRegulatedMotor rightMotor;
 	public EV3LargeRegulatedMotor leftMotor;
 	public EV3MediumRegulatedMotor lifterMotor;
@@ -27,21 +29,14 @@ public class Motors {
 	}
 	
 	/**
-	 * Tämä metodi tarkistaa voidaanko liikuttaa moottoreita annettuihin suuntiin annettu määrä  
+	 * Tämä metodi tarkistaa ollaanko liian lähellä rajoja
 	 * @return
 	 */
 	
 	public boolean checkPosition() {
 		// jos ollaan liian lähellä rajaa
-		if (Math.abs(leftMotor.getPosition()) >= angleLimit || Math.abs(rightMotor.getPosition()) >= angleLimit) {
+		if (Math.abs(leftMotor.getPosition()) + Math.abs(rightMotor.getPosition()) >= angleLimit)
 			return false;
-		/*} else {
-			double limitMultiplier = Math.pow(2, Math.abs(leftMotor.getPosition()) / angleLimit - 1);
-			if (Math.abs(leftMotor.getPosition()) >= limitMultiplier * angleLimit || Math.abs(rightMotor.getPosition()) >= limitMultiplier * angleLimit) {
-				return false;
-			} else {
-				return true;
-			}*/
 		} else {
 			return true;
 		}
@@ -86,11 +81,43 @@ public class Motors {
 		syncEnd();
 	}
 	
+	public void goFrontLeft() {
+		syncStart();
+		rightMotor.backward();
+		syncEnd();
+	}
+	
+	public void goFrontRight() {
+		syncStart();
+		leftMotor.forward();
+		syncEnd();
+	}
+	
+	public void goBackLeft() {
+		syncStart();
+		leftMotor.backward();
+		syncEnd();
+	}
+	
+	public void goBackRight() {
+		syncStart();
+		rightMotor.forward();
+		syncEnd();
+	}
+	
 	public void rotate(int leftAngle, int rightAngle) {
 		syncStart();
 		leftMotor.rotate(leftAngle);
 		rightMotor.rotate(rightAngle);
 		syncEnd();
+	}
+	
+	public void lift() {
+		lifterMotor.rotateTo(lifterAngle);
+	}
+	
+	public void lower() {
+		lifterMotor.rotateTo(0);
 	}
 	
 	public void stopFlt(){
@@ -107,10 +134,10 @@ public class Motors {
 		syncEnd();
 	}
 	
-	public void setSpeed(int leftSpeed, int rightSpeed) {
+	public void setSpeed(float leftSpeed, float rightSpeed) {
 		syncStart();
-		leftMotor.setSpeed(leftSpeed);
-		rightMotor.setSpeed(rightSpeed);
+		leftMotor.setSpeed((int) ((leftSpeed / 100.0) * defaultSpeed));
+		rightMotor.setSpeed((int) ((rightSpeed / 100.0) * defaultSpeed));
 		syncEnd();
 	}
 	
@@ -130,6 +157,11 @@ public class Motors {
 			// wait
 		}
 	}
+	
+	/**
+	 * Tämä metodi palauttaa robotin nollakohtaan jos liian lähellä rajoja
+	 * @return
+	 */
 	
 	public void restartCheck() {
 		if (!checkPosition()) {

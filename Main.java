@@ -17,7 +17,6 @@ public class Main {
 		int x = 0;
 		int y = 0;
 		
-		
 		LCD.drawString(valinta, 0, 0);
 		while (true) {
 			LCD.clear();
@@ -25,13 +24,13 @@ public class Main {
 			LCD.refresh();
 			if (valinta == "vapaa") {
 				if (Button.DOWN.isDown()) {
-					drawLine("eteen");
+					penController.drawLine("eteen", 25);
 				}else if (Button.UP.isDown()) {
-					drawLine("taakse");
+					penController.drawLine("taakse", 25);
 				}else if (Button.RIGHT.isDown()) {
-					drawLine("vasen");
+					penController.drawLine("vasen", 25);
 				}else if (Button.LEFT.isDown()) {
-					drawLine("oikea");
+					penController.drawLine("oikea", 25);
 				}
 //				if (Button.DOWN.isDown()) {
 //					y--;
@@ -47,17 +46,16 @@ public class Main {
 //					Delay.msDelay(500);
 //				}
 				else if (Button.ENTER.isDown()) {
-					ympyra2();
-//					penController.drawLineXY(x, y);
+					shapes.ympyra(5, 200);
 				}
 				
 //			} else if (valinta == "nelio") {
 //				if (Button.ENTER.isDown()){
-//					nelio(100);
+//					shapes.nelio(100);
 //				}
 //			} else if (valinta == "kolmio"){
 //				if (Button.ENTER.isDown()){
-//					kolmio(100);
+//					shapes.kolmio(100);
 //				}
 			}
 			
@@ -71,98 +69,12 @@ public class Main {
 	static void init() {
 		motors = new Motors();
 		penController = new PenController(motors);
+		shapes = new Shapes(penController);
+		letters = new Letters(penController);
 	}
 	
 	
-	// piirt‰‰ viivan valittuun suuntaan oletuspituudella
-	// k‰ytt‰en forward, backward, flt metodeja
-	static void drawLine(String dir, int lenght) { 
-		if (dir == "eteen") {
-			motors.goForward();
-		} else if (dir == "taakse") {
-			motors.goBackward();
-		} else if (dir == "oikea") {
-			motors.goRight();
-		} else if (dir == "vasen") {
-			motors.goLeft();
-		} else if (dir == "takavasen") {
-			motors.syncStart();
-			motors.leftMotor.backward();
-			motors.syncEnd();
-		} else if (dir == "takaoikea") {
-			motors.syncStart();
-			motors.rightMotor.forward();
-			motors.syncEnd();
-		} else if (dir == "etuoikea") {
-			motors.syncStart();
-			motors.leftMotor.forward();
-			motors.syncEnd();
-		} else if (dir == "etuvasen") {
-			motors.syncStart();
-			motors.rightMotor.backward();
-			motors.syncEnd();
-		}
-		
-		Delay.msDelay(lenght); 
-		
-		motors.stopFlt();
-	}
 	
-	// piirt‰‰ viivan valittuun suuntaan oletuspituudella
-	// k‰ytt‰en forward, backward, flt metodeja
-	static void drawLine(String dir) { 
-		int lenght = 250;
-		
-		if (dir == "eteen") {
-			motors.goForward();
-		} else if (dir == "taakse") {
-			motors.goBackward();
-		} else if (dir == "oikea") {
-			motors.goRight();
-		} else if (dir == "vasen") {
-			motors.goLeft();
-		} else if (dir == "takavasen") {
-			motors.syncStart();
-			motors.leftMotor.backward();
-			motors.syncEnd();
-		} else if (dir == "takaoikea") {
-			motors.syncStart();
-			motors.rightMotor.forward();
-			motors.syncEnd();
-		} else if (dir == "etuoikea") {
-			motors.syncStart();
-			motors.leftMotor.forward();
-			motors.syncEnd();
-		} else if (dir == "etuvasen") {
-			motors.syncStart();
-			motors.rightMotor.backward();
-			motors.syncEnd();
-		}
-		
-		Delay.msDelay(lenght); 
-		
-		motors.stopFlt();
-	}
-	
-	// piirt‰‰ kolmion
-	static void kolmio(int size) {
-		drawLine("oikea", size);
-		drawLine("eteen", size);
-		drawLine("takavasen", size * 2);
-		Delay.msDelay(100);
-	}
-	
-	// piirt‰‰ neliˆn eli nelj‰ viivaa per‰kk‰in
-	static void nelio(int size) { 
-		drawLine("vasen");
-		Delay.msDelay(200); // n‰it‰ taukoja ei tapahdu jos k‰ytt‰‰ motor.rotate
-		drawLine("eteen");
-		Delay.msDelay(200);
-		drawLine("oikea");
-		Delay.msDelay(200);
-		drawLine("taakse");
-		Delay.msDelay(200);
-	}
 	
 //	static void ympyra2() {
 //	int alkuNopeusRight = rightMotor.getSpeed();
@@ -187,7 +99,7 @@ public class Main {
 //	leftMotor.setSpeed(alkuNopeusLeft);
 //	rightMotor.setSpeed(alkuNopeusRight);
 //}
-	
+	/*
 static void ympyra2() {
 	int alkuNopeusRight = motors.rightMotor.getSpeed();
 	int alkuNopeusLeft = motors.leftMotor.getSpeed();
@@ -255,7 +167,7 @@ static void ympyra2() {
 	motors.leftMotor.setSpeed(alkuNopeusLeft);
 	motors.rightMotor.setSpeed(alkuNopeusRight);
 }
-	
+*/	
 	// yritt‰‰ piirt‰‰ ympyr‰n
 //	static void ympyra(float size) {
 //		int alpha = 0;
@@ -328,5 +240,5 @@ static void ympyra2() {
 //		rightMotor.endSynchronization();
 //		leftMotor.endSynchronization();
 //		Delay.msDelay(10); // t‰m‰ pelasti
-//	}
+	//	}
 }

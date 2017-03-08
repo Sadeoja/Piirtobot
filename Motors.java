@@ -3,17 +3,44 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.robotics.RegulatedMotor;
 
+/**
+ * Moottorin ohjaus
+ * @author ?
+ * Tässä tiedostossa voidaan ohjata moottoreita.
+ */
+
+
 public class Motors {
-	public RegulatedMotor rightMotor;
-	public RegulatedMotor leftMotor;
-	public RegulatedMotor lifterMotor;
+	private float defaultSpeed;
+	private int angleLimit = 1600;
+	private int lifterAngle = 45;
+	
+	public EV3LargeRegulatedMotor rightMotor;
+	public EV3LargeRegulatedMotor leftMotor;
+	public EV3MediumRegulatedMotor lifterMotor;
+	
 	public Motors(){
 		rightMotor = new EV3LargeRegulatedMotor(MotorPort.A);
 		leftMotor = new EV3LargeRegulatedMotor(MotorPort.C);
 		lifterMotor = new EV3MediumRegulatedMotor(MotorPort.B);
-		rightMotor.setSpeed(300);
-		leftMotor.setSpeed(300);
-		lifterMotor.setSpeed(300);
+		this.defaultSpeed = Math.min(leftMotor.getMaxSpeed(), rightMotor.getMaxSpeed());
+		rightMotor.setSpeed(defaultSpeed);
+		leftMotor.setSpeed(defaultSpeed);
+		lifterMotor.setSpeed(defaultSpeed);
+	}
+	
+	/**
+	 * Tämä metodi tarkistaa ollaanko liian lähellä rajoja
+	 * @return
+	 */
+	
+	public boolean checkPosition() {
+		// jos ollaan liian lähellä rajaa
+		if (Math.abs(leftMotor.getPosition()) + Math.abs(rightMotor.getPosition()) >= angleLimit) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	public void syncStart(){
@@ -55,11 +82,88 @@ public class Motors {
 		syncEnd();
 	}
 	
+	public void goFrontLeft() {
+		syncStart();
+		rightMotor.backward();
+		syncEnd();
+	}
+	
+	public void goFrontRight() {
+		syncStart();
+		leftMotor.forward();
+		syncEnd();
+	}
+	
+	public void goBackLeft() {
+		syncStart();
+		leftMotor.backward();
+		syncEnd();
+	}
+	
+	public void goBackRight() {
+		syncStart();
+		rightMotor.forward();
+		syncEnd();
+	}
+	
+	public void rotate(int leftAngle, int rightAngle) {
+		syncStart();
+		leftMotor.rotate(leftAngle);
+		rightMotor.rotate(rightAngle);
+		syncEnd();
+	}
+	
+	public void lift() {
+		lifterMotor.rotateTo(lifterAngle);
+	}
+	
+	public void lower() {
+		lifterMotor.rotateTo(0);
+	}
+	
 	public void stopFlt(){
 		syncStart();
 		leftMotor.flt();
 		rightMotor.flt();
 		syncEnd();
+	}
+	
+	public void stop() {
+		syncStart();
+		leftMotor.flt(true);
+		rightMotor.flt(true);
+		syncEnd();
+	}
+	
+	public void setSpeed(float leftSpeed, float rightSpeed) {
+		leftMotor.setSpeed(leftSpeed / 100 * defaultSpeed);
+		rightMotor.setSpeed(rightSpeed / 100 * defaultSpeed);
+	}
+	
+	public void resetSpeed() {
+		leftMotor.setSpeed(defaultSpeed);
+		rightMotor.setSpeed(defaultSpeed);
+	}
+	
+	public void resetPosition() {
+		syncStart();
+		leftMotor.rotateTo(0);
+		rightMotor.rotateTo(0);
+		syncEnd();
+		while(leftMotor.isMoving() || rightMotor.isMoving()) {
+			// wait
+		}
+	}
+	
+	/**
+	 * Tämä metodi palauttaa robotin nollakohtaan jos liian lähellä rajoja
+	 * @return
+	 */
+	
+	public void restartCheck() {
+		if (!checkPosition()) {
+			resetPosition();
+		}
 	}
 	
 	public void close(){

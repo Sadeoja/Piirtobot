@@ -1,0 +1,45 @@
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3IRSensor;
+
+public class IRSChecker extends Thread {
+	private EV3IRSensor infraredSensor;
+	public IRSChecker(EV3IRSensor sensor){
+	this.infraredSensor = sensor;
+	}
+
+public static void main(String[] args){
+	EV3IRSensor irSensor = new EV3IRSensor(SensorPort.S4);
+		IRSChecker checkerThread = new IRSChecker(irSensor);
+		checkerThread.start();
+}
+	private Motors motors;
+public IRSChecker(Motors motors){
+	this.motors = motors;
+}
+
+private Shapes shapes;
+public IRSChecker(Shapes shapes){
+	this.shapes = shapes;
+}
+
+public void run(){
+	int remotecommand = infraredSensor.getRemoteCommand(0);
+	int remotecommand2 = infraredSensor.getRemoteCommand(1);
+	
+	if (remotecommand == 1){
+		this.motors.goBackward();
+		}
+	else if (remotecommand == 2){
+		this.motors.goForward();
+		}
+	else if (remotecommand == 3){
+		this.motors.goRight();
+	}
+	this.motors.stop();
+	if (remotecommand2 == 1){
+		this.shapes.kolmio(2);
+	}
+	
+}
+
+}
